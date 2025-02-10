@@ -34,34 +34,39 @@
         }
 
         function login() {
-            let userType = document.getElementById("userType").value;
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
+    let userType = document.getElementById("userType").value;
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
 
-            // Fetch stored data from localStorage
-            let students = JSON.parse(localStorage.getItem("students")) || [];
-            let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+    let students = JSON.parse(localStorage.getItem("students")) || [];
+    let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+    let admin = JSON.parse(localStorage.getItem("admin")) || {};
 
-            if (userType === "student") {
-                let student = students.find(s => s.studentID === username && s.studentPassword === password);
-                if (student) {
-                    window.location.href = "student.html"; // Redirect to bus selection page
-                    return;
-                }
-            } else if (userType === "admin" && username === "admin" && password === "admin123") {
-                window.location.href = "managment.html"; // Redirect to admin panel
-                return;
-            } else if (userType === "driver") {
-                let driver = drivers.find(d => d.driverID === username && d.driverPassword === password);
-                if (driver) {
-                    localStorage.setItem("driverID", username); // Store driver ID for tracking
-                    window.location.href = "driver_traking.html"; // Redirect to location sharing page
-                    return;
-                }
-            }
-
-            alert("Invalid login details!");
+    if (userType === "student") {
+        let student = students.find(s => s.studentID === username && s.studentPassword === password);
+        if (student) {
+            alert("Student Login Successful!");
+            window.location.href = "student.html";
+            return;
         }
+    } else if (userType === "admin") {
+        if (username === admin.username && password === admin.password) {
+            alert("Admin Login Successful!");
+            window.location.href = "managment.html";
+            return;
+        }
+    } else if (userType === "driver") {
+        let driver = drivers.find(d => d.driverID === username && d.driverPassword === password);
+        if (driver) {
+            alert("Driver Login Successful!");
+            localStorage.setItem("driverID", username);
+            window.location.href = "driver_traking.html";
+            return;
+        }
+    }
+
+    alert("Invalid login details! Please check your username and password.");
+                             }
 
         document.addEventListener("DOMContentLoaded", displayAnnouncement);
     </script>
