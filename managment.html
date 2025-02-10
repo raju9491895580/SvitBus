@@ -102,3 +102,59 @@
     </script>
 </body>
 </html>
+<h2>Manage Drivers</h2>
+<input type="text" id="driverID" placeholder="Enter Driver ID">
+<button onclick="addDriver()">Add Driver</button>
+<button onclick="removeDriver()">Remove Driver</button>
+<h3>Registered Drivers:</h3>
+<ul id="driverList"></ul>
+
+<script>
+    // Load existing drivers from localStorage
+    function loadDrivers() {
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        let list = document.getElementById("driverList");
+        list.innerHTML = "";  // Clear list
+        drivers.forEach(driver => {
+            let li = document.createElement("li");
+            li.textContent = driver;
+            list.appendChild(li);
+        });
+    }
+
+    // Add a driver
+    function addDriver() {
+        let driverID = document.getElementById("driverID").value;
+        if (!driverID) {
+            alert("Enter a valid Driver ID!");
+            return;
+        }
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        if (!drivers.includes(driverID)) {
+            drivers.push(driverID);
+            localStorage.setItem("drivers", JSON.stringify(drivers));
+            alert("Driver added successfully!");
+        } else {
+            alert("Driver ID already exists!");
+        }
+        loadDrivers(); // Refresh list
+    }
+
+    // Remove a driver
+    function removeDriver() {
+        let driverID = document.getElementById("driverID").value;
+        let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
+        let index = drivers.indexOf(driverID);
+        if (index !== -1) {
+            drivers.splice(index, 1);
+            localStorage.setItem("drivers", JSON.stringify(drivers));
+            alert("Driver removed!");
+        } else {
+            alert("Driver ID not found!");
+        }
+        loadDrivers(); // Refresh list
+    }
+
+    // Load drivers when page opens
+    loadDrivers();
+</script>
