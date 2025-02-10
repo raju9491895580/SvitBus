@@ -39,3 +39,15 @@
     </script>
 </body>
 </html>
+<script>
+    function loadDriverLocation() {
+        let driverLoc = JSON.parse(localStorage.getItem("driverLocation"));
+        if (driverLoc) {
+            L.marker([driverLoc.lat, driverLoc.lon]).addTo(map)
+                .bindPopup("Bus Location").openPopup();
+            map.setView([driverLoc.lat, driverLoc.lon], 15);
+        }
+    }
+
+    setInterval(loadDriverLocation, 5000); // Update every 5 sec
+</script>
