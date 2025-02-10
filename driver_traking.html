@@ -5,72 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Location Sharing</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Driver Location Sharing</h1>
-        <input type="text" id="driverLogin" placeholder="Enter Driver ID">
-        <button onclick="startSharing()">Start Sharing Location</button>
-        <p id="status">Status: Not Sharing</p>
-    </div>
+    <h2>Driver Location Sharing</h2>
+    <input type="text" id="driverID" placeholder="Enter Driver ID">
+    <button onclick="startSharing()">Start Sharing Location</button>
+    <p>Status: <span id="status">Not Sharing</span></p>
+
+    <!-- Live Tracking Panel -->
+    <h2>Live Tracking</h2>
+    <div id="map" style="height: 400px;"></div>
 
     <script>
-        let tracking = false;
-        let watchID;
+        let driverMarker;
+        let map = L.map('map').setView([20.5937, 78.9629], 5); // Default India location
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         function startSharing() {
-            let driverID = document.getElementById("driverLogin").value;
-            let registeredDrivers = JSON.parse(localStorage.getItem("drivers")) || [];
-
-            if (!registeredDrivers.includes(driverID)) {
-                alert("Access denied! You are not a registered driver.");
+            let driverID = document.getElementById("driverID").value;
+            if (!driverID) {
+                alert("Enter a valid Driver ID!");
                 return;
             }
 
-            if (!tracking) {
-                if (navigator.geolocation) {
-                    watchID = navigator.geolocation.watchPosition(
-                        (position) => {
-                            let latitude = position.coords.latitude;
-                            let longitude = position.coords.longitude;
-
-                            // Store driver location
-                            localStorage.setItem("bus_location", JSON.stringify({ latitude, longitude }));
-                            document.getElementById("status").innerText = `Status: Sharing (${latitude}, ${longitude})`;
-                        },
-                        (error) => {
-                            alert("Error getting location: " + error.message);
-                        },
-                        { enableHighAccuracy: true, maximumAge: 0 }
-                    );
-
-                    tracking = true;
-                    document.getElementById("status").innerText = "Status: Sharing...";
-                } else {
-                    alert("Geolocation is not supported by this browser.");
-                }
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
             }
+
+            document.getElementById("status").innerText = "Sharing...";
+            navigator.geolocation.watchPosition(position => {
+                let lat = position.coords.latitude;
+                let lon = position.coords.longitude;
+
+                if (!driverMarker) {
+                    driverMarker = L.marker([lat, lon]).addTo(map).bindPopup("You are here!");
+                } else {
+                    driverMarker.setLatLng([lat, lon]);
+                }
+                
+                map.setView([lat, lon], 15);
+
+                // Save location to localStorage (for students & admin)
+                localStorage.setItem("driverLocation", JSON.stringify({lat, lon}));
+            }, () => {
+                alert("Unable to fetch location!");
+            });
         }
     </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Page</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-</head>
-<body>
-    <div class="container">
-        <h1>Driver Panel</h1>
-        <button id="startSharing">Start Sharing Location</button>
-        <div id="map" style="height: 400px; margin-top: 20px; display: none;"></div>
-    </div>
-
-    <script src="driver.js"></script>
 </body>
 </html>
