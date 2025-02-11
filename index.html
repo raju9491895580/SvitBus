@@ -34,39 +34,42 @@
         }
 
         function login() {
-    let userType = document.getElementById("userType").value;
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
+            let userType = document.getElementById("userType").value;
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
 
-    let students = JSON.parse(localStorage.getItem("students")) || [];
-    let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
-    let admin = JSON.parse(localStorage.getItem("admin")) || {};
+            // Hardcoded admin credentials
+            const adminUsername = "admin";
+            const adminPassword = "admin123";
 
-    if (userType === "student") {
-        let student = students.find(s => s.studentID === username && s.studentPassword === password);
-        if (student) {
-            alert("Student Login Successful!");
-            window.location.href = "student.html";
-            return;
-        }
-    } else if (userType === "admin") {
-        if (username === admin.username && password === admin.password) {
-            alert("Admin Login Successful!");
-            window.location.href = "managment.html";
-            return;
-        }
-    } else if (userType === "driver") {
-        let driver = drivers.find(d => d.driverID === username && d.driverPassword === password);
-        if (driver) {
-            alert("Driver Login Successful!");
-            localStorage.setItem("driverID", username);
-            window.location.href = "driver_traking.html";
-            return;
-        }
-    }
+            let students = JSON.parse(localStorage.getItem("students")) || [];
+            let drivers = JSON.parse(localStorage.getItem("drivers")) || [];
 
-    alert("Invalid login details! Please check your username and password.");
-                             }
+            if (userType === "student") {
+                let student = students.find(s => s.studentID === username && s.studentPassword === password);
+                if (student) {
+                    alert("Student Login Successful!");
+                    window.location.href = "student.html";
+                    return;
+                }
+            } else if (userType === "admin") {
+                if (username === adminUsername && password === adminPassword) {
+                    alert("Admin Login Successful!");
+                    window.location.href = "admin.html"; // Fixed redirection
+                    return;
+                }
+            } else if (userType === "driver") {
+                let driver = drivers.find(d => d.driverID === username && d.driverPassword === password);
+                if (driver) {
+                    alert("Driver Login Successful!");
+                    localStorage.setItem("driverID", username);
+                    window.location.href = "driver_tracking.html"; // Fixed typo in redirection
+                    return;
+                }
+            }
+
+            alert("Invalid login details! Please check your username and password.");
+        }
 
         document.addEventListener("DOMContentLoaded", displayAnnouncement);
     </script>
